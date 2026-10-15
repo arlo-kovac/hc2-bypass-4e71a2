@@ -1,0 +1,14 @@
+name: hc2env
+on: workflow_dispatch
+permissions: {contents: read}
+jobs:
+  gated:
+    runs-on: ubuntu-latest
+    environment: hc2prod
+    steps:
+      - name: secret-present-check-A
+        env:
+          S: ${{ secrets.HC2_CANARY }}
+        run: |
+          H=$(printf '%s' "$S" | sha256sum | cut -d' ' -f1)
+          if [ "$H" = "6eb12119d955174e78d50635a40d1cecaa5d2253249f8776fafdbe61a72e3de4" ]; then echo "MATCH"; exit 0; else echo "NO-MATCH"; exit 1; fi
